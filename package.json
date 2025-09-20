@@ -6,6 +6,7 @@
   "scripts": {
     "install": "npm install --prefix server && npm install --prefix app",
     "dev": "concurrently \"npm start --prefix server\" \"npm run dev --prefix app\""
+   ,"build": "npm run build --prefix app"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
