@@ -1,0 +1,13 @@
+C:\Users\solar\Desktop\AI-Listynz'EZ\
+│
+├── agent\
+│   └── Modelfile          # Your AI brain
+│
+├── server\
+│   ├── package.json       # Backend dependencies
+│   └── server.js          # Node.js API to talk to the agent
+│
+└── app\
+    ├── package.json       # Frontend dependencies
+    └── src\
+        └── Chat.jsx       # Simple UI to interact with your agent
