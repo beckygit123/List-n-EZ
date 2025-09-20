@@ -1,14 +1,20 @@
 import { useState, useCallback } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Conversation from "./Conversation";
 import ChatSidebar from "./ChatSidebar";
 
 export default function Chat() {
+  const [aiChoice, setAiChoice] = useState(null); // 'agent' or 'gemini'
+  const [showChoiceModal, setShowChoiceModal] = useState(false);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [conversationHistory, setConversationHistory] = useState([]);
 
   const sendMessage = useCallback(async (messageToSend) => {
+    if (!aiChoice) {
+      setShowChoiceModal(true);
+      return;
+    }
     if (!messageToSend.trim() || isLoading) return;
 
     setIsLoading(true);
@@ -22,7 +28,11 @@ export default function Chat() {
     ]);
 
     try {
-      const res = await fetch(import.meta.env.VITE_API_URL || "http://localhost:3000/ask", {
+      let apiUrl = "https://listynez.netlify.app/.netlify/functions/ask";
+      if (aiChoice === "gemini") {
+        apiUrl = "https://listynez.netlify.app/.netlify/functions/gemini";
+      }
+      const res = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: messageToSend }),
@@ -83,7 +93,11 @@ export default function Chat() {
   }, [isLoading]);
 
   const handleSendMessage = () => {
-    sendMessage(input);
+    if (!aiChoice) {
+      setShowChoiceModal(true);
+    } else {
+      sendMessage(input);
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -99,7 +113,75 @@ export default function Chat() {
 
   return (
     <div className="h-full bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
-      <div className="max-w-6xl mx-auto h-full flex flex-col">
+      <AnimatePresence>
+        {showChoiceModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center"
+            >
+              <h2 className="text-2xl font-bold mb-4">Choose AI Provider</h2>
+              <p className="mb-6 text-gray-600">Select which AI you want to use for this conversation.</p>
+              <div className="flex gap-4 justify-center mb-6">
+                <button
+                  className="px-6 py-3 rounded-lg text-white font-semibold transition focus:outline-none group relative"
+                  onClick={() => { setAiChoice("agent"); setShowChoiceModal(false); sendMessage(input); }}
+                  style={{ backgroundColor: '#800000', boxShadow: '0 0 0 0px #800000', transition: 'box-shadow 0.2s, background-color 0.2s' }}
+                  onMouseEnter={e => {
+                    if (!e.currentTarget.disabled) {
+                      e.currentTarget.style.boxShadow = '0 0 20px 4px #800000';
+                      e.currentTarget.style.backgroundColor = '#a52a2a';
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.boxShadow = '0 0 0 0px #800000';
+                    e.currentTarget.style.backgroundColor = '#800000';
+                  }}
+                >
+                  <span style={{
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '3rem',
+                    color: 'red',
+                    pointerEvents: 'none',
+                    zIndex: 2
+                  }}>X</span>
+                  <span style={{ position: 'relative', zIndex: 3 }}>LystynZ-Agent</span>
+                </button>
+                <button
+                  className="px-6 py-3 rounded-lg bg-purple-500 text-white font-semibold hover:bg-purple-600 transition focus:outline-none group"
+                  onClick={() => { setAiChoice("gemini"); setShowChoiceModal(false); sendMessage(input); }}
+                  style={{ boxShadow: '0 0 0 0px #a855f7' }}
+                  onMouseEnter={e => { if (!e.currentTarget.disabled) e.currentTarget.style.boxShadow = '0 0 8px 2px #a855f7'; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 0 0 0px #a855f7'; }}
+                >
+                  Gemini
+                </button>
+              </div>
+              <button
+                className="text-gray-500 hover:text-gray-700 text-sm underline"
+                onClick={() => setShowChoiceModal(false)}
+              >
+                Cancel
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+  <div className="max-w-6xl mx-auto h-full flex flex-col">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -145,7 +227,10 @@ export default function Chat() {
                     whileTap={{ scale: 0.98 }}
                     onClick={handleSendMessage}
                     disabled={isLoading || !input.trim()}
-                    className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-200 disabled:cursor-not-allowed"
+                    className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-200 disabled:cursor-not-allowed focus:outline-none group"
+                    style={{ boxShadow: '0 0 0 0px #6366f1' }}
+                    onMouseEnter={e => { if (!e.currentTarget.disabled) e.currentTarget.style.boxShadow = '0 0 8px 2px #6366f1'; }}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 0 0 0px #6366f1'; }}
                   >
                     {isLoading ? (
                       <div className="flex items-center space-x-2">
