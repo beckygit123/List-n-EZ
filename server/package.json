@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "build": "cd ../app && npm install && npm run build",
-    "postinstall": "cd ../app && npm install"
+    "build": "npm install && cd ../app && npm install && npm run build"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
