@@ -14,6 +14,14 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    include: ['socket.io-client']
+  },
+  build: {
+    commonjsOptions: {
+      include: [/socket\.io-client/, /node_modules/]
+    }
+  },
   server: {
     port: 5173,
     host: true
