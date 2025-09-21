@@ -1,4 +1,4 @@
-# 🔥 COMPLETE INSTALLATION GUIDE FOR LISTYNZ-AGENT
+# 🔥 COMPLETE INSTALLATION GUIDE FOR Listi'n'EZ
 
 ## 📋 PREREQUISITES (Install these first!)
 
@@ -132,7 +132,7 @@ pip install sendgrid mailgun-python
 pip install redis celery
 ```
 
-## 🚀 SETUP YOUR LISTYNZ-AGENT
+## 🚀 SETUP YOUR Listi'n'EZ
 
 ```powershell
 # Go back to main project
@@ -140,7 +140,7 @@ cd "C:\Users\solar\Desktop\AI-Listynz'EZ"
 
 # Create the AI agent
 cd agent
-ollama create lystynz-agent -f Modelfile
+ollama create listinez -f Modelfile
 
 # Install server dependencies
 cd ../server
@@ -166,7 +166,7 @@ npm run dev
 ## 🎨 NEW FEATURES ADDED
 
 ### 🤖 **AI Chat Assistant**
-- Interactive chat with your LystynZ-Agent
+- Interactive chat with your Listi'n'EZ
 - Get help with product descriptions, pricing, customer service
 - Real-time responses powered by LLaMA 3.2
 
@@ -191,7 +191,7 @@ npm run dev
 - [ ] Git installed: `git --version`
 - [ ] Node.js installed: `node --version`
 - [ ] Ollama installed: `ollama --version`
-- [ ] AI agent created: `ollama list` (should show lystynz-agent)
+- [ ] AI agent created: `ollama list` (should show listinez)
 - [ ] Backend running: http://localhost:3000
 - [ ] Frontend running: http://localhost:5173
 

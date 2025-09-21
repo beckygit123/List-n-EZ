@@ -1,6 +1,6 @@
-# LystynZ-Agent 🛍️
+# Listi'n'EZ 🛍️
 
-Your AI assistant for reselling success! LystynZ-Agent helps with product descriptions, pricing strategies, customer service, and SEO optimization.
+Your AI assistant for reselling success! Listi'n'EZ helps with product descriptions, pricing strategies, customer service, and SEO optimization.
  
 ## ⚠️ Important Note on Documentation
  
@@ -19,7 +19,7 @@ This project contains two setup guides: `README.md` (this file) and `INSTALLATIO
     -   Install Ollama from: https://ollama.ai/download
     -   From the project's root directory (`AI-Listynz'EZ/`), run this command in your terminal:
         ```bash
-        ollama create lystynz-agent -f agent/Modelfile
+        ollama create listinez -f agent/Modelfile
         ```
  
 2.  **Install Project Dependencies:**
@@ -78,5 +78,5 @@ AI-Listynz'EZ/
 ## 🆘 Troubleshooting
 
 - Make sure Ollama is running: `ollama serve` or by opening the desktop app.
-- Check that the agent is created: `ollama list` (should show `lystynz-agent`).
+- Check that the agent is created: `ollama list` (should show `listinez`).
 - Ensure you are in the correct directory when running commands. The `npm run dev` command should be run from the root `AI-Listynz'EZ` folder.
