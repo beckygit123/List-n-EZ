@@ -7,6 +7,8 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { removeBackground } from "@imgly/background-removal-node";
 import { Blob } from "buffer";
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const app = express();
 const httpServer = createServer(app);
@@ -19,6 +21,10 @@ const io = new Server(httpServer, {
 const upload = multer();
 // Increase payload size limit for base64 images
 app.use(bodyParser.json({ limit: '10mb' }));
+
+// Serve static files from the React app build directory
+app.use(express.static(path.join(__dirname, '..', 'app', 'dist')));
+
 
 // Enable CORS for frontend requests
 app.use((req, res, next) => {
@@ -176,6 +182,13 @@ app.post('/api/remove-background', upload.single('image'), async (req, res) => {
     res.status(500).send('Failed to process image.');
   }
 });
+
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'app', 'dist', 'index.html'));
+});
+
 
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => {
