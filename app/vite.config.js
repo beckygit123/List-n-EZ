@@ -15,12 +15,8 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['socket.io-client']
-  },
-  build: {
-    commonjsOptions: {
-      include: [/socket\.io-client/, /node_modules/]
-    }
+    include: ['socket.io-client'],
+    force: true
   },
   server: {
     port: 5173,

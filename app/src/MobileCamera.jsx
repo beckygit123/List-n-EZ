@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { Camera, Check, WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 

@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import * as QRCodeReact from 'qrcode.react';
 const QRCode = QRCodeReact.default;
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { Camera, X, Upload, Zap, RefreshCw, FileText, Smartphone, Wifi, WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
