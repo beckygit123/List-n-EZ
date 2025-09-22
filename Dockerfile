@@ -26,10 +26,10 @@ RUN cd app && npm install
 # Copy all application files
 COPY . .
 
-    # Build the React frontend
-    RUN cd app && npx vite build
+# Build the React frontend using explicit path
+RUN cd app && ./node_modules/.bin/vite build
 
-    # Expose port
+# Expose port
 EXPOSE 3000
 
 # Set working directory to server
