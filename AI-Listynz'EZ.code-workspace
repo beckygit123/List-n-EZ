@@ -1,0 +1,47 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../dreaebayapp/.github"
+		},
+		{
+			"path": "../dreaebayapp/.gitlab"
+		},
+		{
+			"path": "../dreaebayapp/ali responses"
+		},
+		{
+			"path": "../dreaebayapp/chewy responses"
+		},
+		{
+			"path": "../dreaebayapp/docs"
+		},
+		{
+			"path": "../dreaebayapp/dreaimages"
+		},
+		{
+			"path": "../dreaebayapp/Dropshipping Items"
+		},
+		{
+			"path": "../dreaebayapp/ebay responses"
+		},
+		{
+			"path": "../dreaebayapp/etsy responses"
+		},
+		{
+			"path": "../dreaebayapp/linters"
+		},
+		{
+			"path": "../dreaebayapp/log"
+		},
+		{
+			"path": "../dreaebayapp/wayfair responses"
+		},
+		{
+			"path": "../dreaebayapp/wmt responses"
+		}
+	],
+	"settings": {}
+}

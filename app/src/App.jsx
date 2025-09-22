@@ -89,8 +89,8 @@ function App() {
       <main className="flex-1 overflow-y-auto">
         <Routes>
           <Route path="/" element={<Chat />} />
-          <Route path="/workspace" element={<Workspace />} />
-          {/* The mobile camera route is handled separately above */}
+          <Route path="/workspace/*" element={<Workspace />} />
+          <Route path="/mobile-camera" element={<MobileCamera />} />
         </Routes>
       </main>
     </div>

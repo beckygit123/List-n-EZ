@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Route, Routes, NavLink } from "react-router-dom";
+import { Route, Routes, NavLink, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import RemoveBackgroundTool from "./RemoveBackgroundTool";
-import CameraTool from "./CameraTool";
+import CameraTool from "./CameraTool_simple";
 import ProductDescriptionGenerator from "./ProductDescriptionGenerator";
 import { LayoutGrid, Star, Search, Sliders, Bot, Package, Palette, Camera, Store, ShoppingCart, Tag, Video } from 'lucide-react';
 
@@ -30,8 +30,8 @@ const categories = {
   "Image Tools": {
     icon: Camera,
     items: [
-        { name: "AI Background Remover", internal: true, path: "/workspace/tool/remove-background", ai: true, tags: ["ai", "image-processing", "rembg"] },
-        { name: "Product Camera", internal: true, path: "/workspace/tool/camera", ai: true, tags: ["capture", "product"] }
+        { name: "AI Background Remover", internal: true, path: "remove-background", ai: true, tags: ["ai", "image-processing", "rembg"] },
+        { name: "Product Camera", internal: true, path: "camera", ai: true, tags: ["capture", "product"] }
     ]
   },
   "E-commerce Platforms": {
@@ -46,12 +46,13 @@ const categories = {
     items: [
         { name: "Shopify Product Importer", url: "https://github.com/shopify/product-importer", ai: true, tags: ["shopify", "import"] },
         { name: "eBay Listing Optimizer", url: "https://github.com/ebay/listing-optimizer", ai: true, tags: ["ebay", "optimization"] },
-        { name: "AI Product Description Generator", internal: true, path: "/workspace/tool/product-description-generator", ai: true, tags: ["ai", "text-generation", "writing"] },
+        { name: "AI Product Description Generator", internal: true, path: "product-description-generator", ai: true, tags: ["ai", "text-generation", "writing"] },
     ]
   },
 };
 
 function DraggableCard({ item, aiIntensity }) {
+  const navigate = useNavigate();
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "CARD",
     item,
@@ -59,6 +60,19 @@ function DraggableCard({ item, aiIntensity }) {
       isDragging: monitor.isDragging()
     })
   }));
+
+  const handleCardClick = (e) => {
+    // Only handle card click if not clicking on button and not dragging
+    if (!isDragging && !e.target.closest('button')) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (item.internal) {
+        navigate(item.path);
+      } else {
+        window.open(item.url, '_blank');
+      }
+    }
+  };
 
   return (
     <motion.div
@@ -71,8 +85,11 @@ function DraggableCard({ item, aiIntensity }) {
       className="relative cursor-move"
       style={{ opacity: isDragging ? 0.5 : 1 }}
     >
-      <Card className="overflow-hidden transition-all duration-300 group shadow-sm hover:shadow-lg border-gray-200/80 dark:border-gray-800/80">
-        <CardContent className="p-4">
+      <Card className="overflow-hidden transition-all duration-300 group shadow-sm hover:shadow-lg border-gray-200/80 dark:border-gray-800/80 cursor-pointer">
+        <CardContent 
+          className="p-4"
+          onClick={handleCardClick}
+        >
           <div className="flex justify-between items-start mb-3">
             <h3 className="font-semibold text-base leading-tight text-gray-800 dark:text-gray-100 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors">
               {item.name}
@@ -94,12 +111,20 @@ function DraggableCard({ item, aiIntensity }) {
             ))}
           </div>
 
-          <Button asChild variant="outline" size="sm" className="w-full group-hover:bg-pink-50 dark:group-hover:bg-gray-700/50 group-hover:text-pink-600 dark:group-hover:text-pink-400 group-hover:border-pink-300 dark:group-hover:border-pink-500/50 transition-all">
-            {item.internal ? (
-              <NavLink to={item.path}>Open Tool</NavLink>
-            ) : (
-              <a href={item.url} target="_blank" rel="noopener noreferrer">Open Repo</a>
-            )}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full group-hover:bg-pink-50 dark:group-hover:bg-gray-700/50 group-hover:text-pink-600 dark:group-hover:text-pink-400 group-hover:border-pink-300 dark:group-hover:border-pink-500/50 transition-all"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (item.internal) {
+                navigate(item.path);
+              } else {
+                window.open(item.url, '_blank');
+              }
+            }}
+          >
+            {item.internal ? "Open Tool" : "Open Repo"}
           </Button>
         </CardContent>
       </Card>
@@ -253,7 +278,7 @@ export default function Workspace() {
           {Object.entries(categories).map(([cat, { icon: Icon }]) => (
             <NavLink
               key={cat}
-              to={`/workspace/${cat.replace(/\s+/g, "-").toLowerCase()}`}
+              to={`${cat.replace(/\s+/g, "-").toLowerCase()}`}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
@@ -284,27 +309,18 @@ export default function Workspace() {
                 }
               />
             ))}
-            <Route path="/tool/remove-background" element={<RemoveBackgroundTool aiIntensity={aiIntensity} />} />
-            <Route path="/tool/camera" element={<CameraTool aiIntensity={aiIntensity} />} />
-            <Route path="/tool/product-description-generator" element={<ProductDescriptionGenerator aiIntensity={aiIntensity} />} />
+            <Route path="remove-background" element={<RemoveBackgroundTool aiIntensity={aiIntensity} />} />
+            <Route path="camera" element={<CameraTool aiIntensity={aiIntensity} />} />
+            <Route path="product-description-generator" element={<ProductDescriptionGenerator aiIntensity={aiIntensity} />} />
             <Route
               path="/"
               element={
-                <div className="flex flex-col items-center justify-center h-full text-center p-8">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                  >
-                    <div className="mx-auto bg-pink-100 dark:bg-pink-900/50 rounded-full h-24 w-24 flex items-center justify-center mb-6">
-                      <LayoutGrid className="h-12 w-12 text-pink-600 dark:text-pink-400" />
-                    </div>
-                    <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">List'n'<span className="text-pink-600 dark:text-pink-400">EZ</span> Workspace</h1>
-                    <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                      Select a category to browse powerful tools for digital entrepreneurship, from AI-powered helpers to design assets.
-                    </p>
-                  </motion.div>
-                </div>
+                <CategoryPage
+                  title="Image Tools"
+                  items={categories["Image Tools"].items}
+                  aiIntensity={aiIntensity}
+                  setAiIntensity={setAiIntensity}
+                />
               }
             />
           </Routes>

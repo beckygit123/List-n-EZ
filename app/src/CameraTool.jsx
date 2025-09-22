@@ -1,13 +1,14 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import * as QRCodeReact from 'qrcode.react';
-const QRCode = QRCodeReact.default;
+import { QRCodeSVG as QRCode } from 'qrcode.react';
 import { io } from 'socket.io-client';
 import { Camera, X, Upload, Zap, RefreshCw, FileText, Smartphone, Wifi, WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
 
 const CameraTool = ({ aiIntensity }) => {
+  console.log('CameraTool component is mounting with aiIntensity:', aiIntensity);
+  
   const [cameraMode, setCameraMode] = useState('selection'); // 'selection', 'local', 'remote'
   const [roomId, setRoomId] = useState(null);
   const [isPeerConnected, setIsPeerConnected] = useState(false);
@@ -175,6 +176,7 @@ const CameraTool = ({ aiIntensity }) => {
 
   return (
     <div className="p-4 sm:p-6 h-full flex flex-col items-center justify-center">
+      <div>DEBUG: Camera Tool is rendering!</div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -199,9 +201,9 @@ const CameraTool = ({ aiIntensity }) => {
               For the best experience with "Use Phone Camera", ensure your phone and computer<br/>are on the same Wi-Fi network.
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
-              <Button onClick={() => { setCameraMode('local'); startCamera(); }} size="lg" className="w-64 h-24 text-lg">
+              {/* <Button onClick={() => { setCameraMode('local'); startCamera(); }} size="lg" className="w-64 h-24 text-lg">
                 <Camera className="mr-3 h-8 w-8" /> Use Computer<br/>Camera
-              </Button>
+              </Button> */}
               <Button variant="outline" onClick={setupRemoteCamera} size="lg" className="w-64 h-24 text-lg">
                 <Smartphone className="mr-3 h-8 w-8" /> Use Phone<br/>Camera
               </Button>
@@ -214,7 +216,7 @@ const CameraTool = ({ aiIntensity }) => {
               <h2 className="text-2xl font-semibold mb-2 dark:text-white">Scan with your Phone</h2>
               <p className="text-md text-gray-500 dark:text-gray-400 mb-6">Open your phone's camera and point it at the QR code below.</p>
               <div className="relative bg-white p-4 rounded-lg">
-                <QRCode value={`${window.location.origin}/mobile-camera?roomId=${roomId}`} size={192} />
+                <QRCode value={`${window.location.protocol}//${window.location.hostname}:${window.location.port}/camera-permission.html?roomId=${roomId}`} size={192} />
                 <div className={`absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center transition-opacity duration-300 ${isPeerConnected ? 'opacity-0' : 'opacity-100'}`}>
                   <Wifi className="h-12 w-12 text-gray-400 animate-pulse" />
                   <p className="mt-2 font-semibold text-gray-600">Waiting for connection...</p>

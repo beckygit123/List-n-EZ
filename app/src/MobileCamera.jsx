@@ -22,9 +22,7 @@ const MobileCamera = () => {
       return;
     }
 
-    const socketUrl = window.location.hostname === 'localhost' 
-      ? 'http://localhost:3000'
-      : window.location.origin;
+    const socketUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
     const socket = io(socketUrl); // Connect to the server
     socketRef.current = socket;
 
@@ -78,8 +76,17 @@ const MobileCamera = () => {
 
   const startCamera = useCallback(async () => {
     try {
+      // Check if getUserMedia is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera API not supported in this browser');
+      }
+
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }, // Prefer the rear camera
+        video: { 
+          facingMode: 'environment',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
       });
       setStream(mediaStream);
       if (videoRef.current) {

@@ -1,20 +1,75 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 export default function RemoveBackgroundTool({ isDarkMode }) {
     const [originalImage, setOriginalImage] = useState(null);
     const [processedImage, setProcessedImage] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isImageLoading, setIsImageLoading] = useState(false);
     const [error, setError] = useState(null);
     const [file, setFile] = useState(null);
+
+    // Cleanup object URLs when component unmounts
+    useEffect(() => {
+        return () => {
+            if (originalImage && originalImage.startsWith('blob:')) {
+                URL.revokeObjectURL(originalImage);
+            }
+            if (processedImage && processedImage.startsWith('blob:')) {
+                URL.revokeObjectURL(processedImage);
+            }
+        };
+    }, [originalImage, processedImage]);
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         if (selectedFile) {
+            console.log('File selected:', selectedFile.name, selectedFile.type, selectedFile.size);
+            
+            // Validate file type
+            if (!selectedFile.type.startsWith('image/')) {
+                setError('Please select a valid image file');
+                return;
+            }
+            
+            // Validate file size (max 5MB for better performance)
+            if (selectedFile.size > 5 * 1024 * 1024) {
+                setError('File size too large. Please select an image under 5MB');
+                return;
+            }
+            
             setFile(selectedFile);
-            setOriginalImage(URL.createObjectURL(selectedFile));
-            setProcessedImage(null);
             setError(null);
+            setProcessedImage(null);
+            
+            // Use FileReader with better error handling
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                console.log('FileReader loaded successfully');
+                const dataURL = event.target.result;
+                setIsImageLoading(false);
+                setOriginalImage(dataURL);
+            };
+            
+            reader.onerror = function(event) {
+                console.error('FileReader error:', event.target.error);
+                setIsImageLoading(false);
+                setError('Failed to read the image file. Please try a different image.');
+            };
+            
+            reader.onabort = function() {
+                console.error('FileReader aborted');
+                setIsImageLoading(false);
+                setError('File reading was cancelled.');
+            };
+            
+            // Start loading
+            setIsImageLoading(true);
+            console.log('Starting to read file...');
+            
+            // Read as data URL (base64)
+            reader.readAsDataURL(selectedFile);
         }
     };
 
@@ -30,8 +85,8 @@ export default function RemoveBackgroundTool({ isDarkMode }) {
 
         try {
             const apiUrl = window.location.hostname === 'localhost' 
-              ? 'http://localhost:3000/tools/remove-background'
-              : `${window.location.origin}/tools/remove-background`;
+              ? 'http://localhost:3000/api/remove-background'
+              : `${window.location.origin}/api/remove-background`;
             
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -71,14 +126,20 @@ export default function RemoveBackgroundTool({ isDarkMode }) {
                         <input
                             id="image-upload"
                             type="file"
-                            accept="image/png, image/jpeg"
+                            accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
                             onChange={handleFileChange}
                             className={`w-full text-sm rounded-lg border cursor-pointer
                                 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-300 file:bg-gray-600 file:text-white' : 'border-gray-300 file:bg-gray-100'}
                                 file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:font-semibold
                             `}
                         />
-                        <p className="text-xs text-gray-500 mt-1">PNG or JPG files are accepted.</p>
+                        <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF, or WebP files are accepted.</p>
+                        {file && (
+                            <p className="text-xs text-green-600 mt-1">✅ File loaded: {file.name} ({Math.round(file.size/1024)}KB)</p>
+                        )}
+                        {originalImage && (
+                            <p className="text-xs text-blue-600 mt-1">🔗 Image data: {originalImage.substring(0, 30)}...</p>
+                        )}
                     </div>
                     <div className="flex items-center justify-center">
                         <button
@@ -100,8 +161,35 @@ export default function RemoveBackgroundTool({ isDarkMode }) {
                 <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <h3 className="font-semibold mb-2">Original</h3>
-                        <div className={`aspect-square rounded-lg flex items-center justify-center ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                            {originalImage ? <img src={originalImage} alt="Original" className="max-h-full max-w-full object-contain rounded-lg" /> : <p className="text-gray-400">Your image will appear here</p>}
+                        <div className={`aspect-square rounded-lg flex items-center justify-center overflow-hidden border-2 border-dashed ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-300'}`}>
+                            {isImageLoading ? (
+                                <div className="text-center">
+                                    <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-2"></div>
+                                    <p className="text-gray-400 text-sm">Loading image...</p>
+                                </div>
+                            ) : originalImage ? (
+                                <div className="w-full h-full flex items-center justify-center p-4">
+                                    <img 
+                                        src={originalImage} 
+                                        alt="Uploaded image" 
+                                        style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                                        onLoad={() => {
+                                            console.log('✅ Image displayed successfully');
+                                        }}
+                                        onError={(e) => {
+                                            console.error('❌ Image display error:', e.target.src);
+                                            setError('Image display failed. Try a different file format.');
+                                            setOriginalImage(null);
+                                        }}
+                                    />
+                                </div>
+                            ) : (
+                                <div className="text-center p-8">
+                                    <div className="text-6xl mb-4">📁</div>
+                                    <p className="text-gray-500">Choose an image file</p>
+                                    <p className="text-gray-400 text-sm mt-1">JPG, PNG, GIF up to 5MB</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div>

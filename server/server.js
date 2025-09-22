@@ -9,6 +9,10 @@ import { removeBackground } from "@imgly/background-removal-node";
 import { Blob } from "buffer";
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 // ES module equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -18,7 +22,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "*", // Allow all origins for simplicity in development
+    origin: ["http://localhost:5173", "http://localhost:5174", "http://192.168.0.89:5173", "http://192.168.0.89:5174"], // Allow development server and network access
     methods: ["GET", "POST"]
   }
 });
