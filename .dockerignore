@@ -1,0 +1,61 @@
+# Exclude development files
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Exclude git files
+.git/
+.gitignore
+
+# Exclude IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Exclude OS files
+.DS_Store
+Thumbs.db
+
+# Exclude unnecessary image files (keeping only essential ones)
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.webp
+!app/src/assets/**
+
+# Exclude Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Exclude documentation
+*.md
+docs/
+
+# Exclude other build artifacts
+dist/
+build/
+.tmp/
+.cache/
+
+# Exclude environment files
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Exclude logs
+logs/
+*.log
+
+# Exclude testing files
+coverage/
+.nyc_output/
