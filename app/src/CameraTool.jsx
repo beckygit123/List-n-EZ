@@ -28,7 +28,10 @@ const CameraTool = ({ aiIntensity }) => {
     setRoomId(newRoomId);
     setCameraMode('remote');
 
-    const socket = io('http://localhost:3000');
+    const socketUrl = window.location.hostname === 'localhost' 
+      ? 'http://localhost:3000'
+      : window.location.origin;
+    const socket = io(socketUrl);
     socketRef.current = socket;
 
     socket.on('connect', () => {

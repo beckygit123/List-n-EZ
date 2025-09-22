@@ -29,7 +29,11 @@ export default function RemoveBackgroundTool({ isDarkMode }) {
         formData.append('image', file);
 
         try {
-            const response = await fetch('http://localhost:3000/tools/remove-background', {
+            const apiUrl = window.location.hostname === 'localhost' 
+              ? 'http://localhost:3000/tools/remove-background'
+              : `${window.location.origin}/tools/remove-background`;
+            
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 body: formData,
             });

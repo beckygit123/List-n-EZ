@@ -22,7 +22,10 @@ const MobileCamera = () => {
       return;
     }
 
-    const socket = io('http://localhost:3000'); // Connect to the server
+    const socketUrl = window.location.hostname === 'localhost' 
+      ? 'http://localhost:3000'
+      : window.location.origin;
+    const socket = io(socketUrl); // Connect to the server
     socketRef.current = socket;
 
     socket.on('connect', () => {

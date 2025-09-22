@@ -33,7 +33,11 @@ export default function Chat() {
     ]);
 
     try {
-      const res = await fetch(import.meta.env.VITE_API_URL || "http://localhost:3000/api/ask", {
+      const apiUrl = window.location.hostname === 'localhost' 
+        ? "http://localhost:3000/api/ask"
+        : `${window.location.origin}/api/ask`;
+      
+      const res = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: messageToSend, aiChoice }),
