@@ -26,8 +26,8 @@ RUN cd app && npm install
 # Copy all application files
 COPY . .
 
-# Build the React frontend using explicit path
-RUN cd app && ./node_modules/.bin/vite build
+# Fix permissions and build the React frontend
+RUN cd app && chmod +x ./node_modules/.bin/vite && ./node_modules/.bin/vite build
 
 # Expose port
 EXPOSE 3000
