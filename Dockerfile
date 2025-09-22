@@ -27,7 +27,9 @@ RUN cd app && npm install
 COPY . .
 
     # Build the React frontend
-    RUN cd app && npx vite build# Expose port
+    RUN cd app && npx vite build
+
+    # Expose port
 EXPOSE 3000
 
 # Set working directory to server
